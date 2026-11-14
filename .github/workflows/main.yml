@@ -19,9 +19,11 @@ jobs:
         toolchain: [stable, nightly]
         platform:
           # native targets
-          - { target: aarch64-apple-darwin, os: macos-14, native: true }
-          - { target: x86_64-apple-darwin, os: macos-13, native: true }
+          - { target: aarch64-apple-darwin, os: macos-latest, native: true }
+          - { target: x86_64-apple-darwin, os: macos-26-intel, native: true }
+          - { target: aarch64-unknown-linux-gnu, os: ubuntu-26.04-arm, native: true }
           - { target: x86_64-unknown-linux-gnu, os: ubuntu-latest, native: true }
+          - { target: aarch64-pc-windows-msvc, os: windows-11-arm, native: true }
           - { target: x86_64-pc-windows-msvc, os: windows-latest, native: true }
           # arm64 linux
           - { target: aarch64-unknown-linux-gnu, os: ubuntu-latest, native: false }
