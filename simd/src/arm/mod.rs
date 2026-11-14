@@ -12,7 +12,7 @@ use std::arch::aarch64::{self, float32x2_t, float32x4_t, int32x2_t, int32x4_t};
 use std::arch::aarch64::{uint32x2_t, uint32x4_t};
 use std::f32;
 use std::fmt::{self, Debug, Formatter};
-use std::intrinsics::simd::*;
+use std::intrinsics::simd::simd_shuffle;
 use std::mem;
 use std::ops::{Add, BitAnd, BitOr, Div, Index, IndexMut, Mul, Not, Shr, Sub};
 
@@ -79,12 +79,12 @@ impl F32x2 {
 
     #[inline]
     pub fn min(self, other: F32x2) -> F32x2 {
-        unsafe { F32x2(simd_minimum_number_nsz(self.0, other.0)) }
+        unsafe { F32x2(aarch64::vminnm_f32(self.0, other.0)) }
     }
 
     #[inline]
     pub fn max(self, other: F32x2) -> F32x2 {
-        unsafe { F32x2(simd_maximum_number_nsz(self.0, other.0)) }
+        unsafe { F32x2(aarch64::vmaxnm_f32(self.0, other.0)) }
     }
 
     #[inline]
@@ -116,22 +116,22 @@ impl F32x2 {
 
     #[inline]
     pub fn packed_eq(self, other: F32x2) -> U32x2 {
-        unsafe { U32x2(simd_eq(self.0, other.0)) }
+        unsafe { U32x2(aarch64::vceq_f32(self.0, other.0)) }
     }
 
     #[inline]
     pub fn packed_gt(self, other: F32x2) -> U32x2 {
-        unsafe { U32x2(simd_gt(self.0, other.0)) }
+        unsafe { U32x2(aarch64::vcgt_f32(self.0, other.0)) }
     }
 
     #[inline]
     pub fn packed_lt(self, other: F32x2) -> U32x2 {
-        unsafe { U32x2(simd_lt(self.0, other.0)) }
+        unsafe { U32x2(aarch64::vclt_f32(self.0, other.0)) }
     }
 
     #[inline]
     pub fn packed_le(self, other: F32x2) -> U32x2 {
-        unsafe { U32x2(simd_le(self.0, other.0)) }
+        unsafe { U32x2(aarch64::vcle_f32(self.0, other.0)) }
     }
 
     // Conversions
@@ -144,7 +144,7 @@ impl F32x2 {
     /// Converts these packed floats to integers via rounding.
     #[inline]
     pub fn to_i32x2(self) -> I32x2 {
-        unsafe { I32x2(simd_cast(aarch64::vrnda_f32(self.0))) }
+        unsafe { I32x2(aarch64::vcvt_s32_f32(aarch64::vrnda_f32(self.0))) }
     }
 
     #[inline]
@@ -208,7 +208,7 @@ impl Add<F32x2> for F32x2 {
     type Output = F32x2;
     #[inline]
     fn add(self, other: F32x2) -> F32x2 {
-        unsafe { F32x2(simd_add(self.0, other.0)) }
+        unsafe { F32x2(aarch64::vadd_f32(self.0, other.0)) }
     }
 }
 
@@ -216,7 +216,7 @@ impl Div<F32x2> for F32x2 {
     type Output = F32x2;
     #[inline]
     fn div(self, other: F32x2) -> F32x2 {
-        unsafe { F32x2(simd_div(self.0, other.0)) }
+        unsafe { F32x2(aarch64::vdiv_f32(self.0, other.0)) }
     }
 }
 
@@ -224,7 +224,7 @@ impl Mul<F32x2> for F32x2 {
     type Output = F32x2;
     #[inline]
     fn mul(self, other: F32x2) -> F32x2 {
-        unsafe { F32x2(simd_mul(self.0, other.0)) }
+        unsafe { F32x2(aarch64::vmul_f32(self.0, other.0)) }
     }
 }
 
@@ -232,7 +232,7 @@ impl Sub<F32x2> for F32x2 {
     type Output = F32x2;
     #[inline]
     fn sub(self, other: F32x2) -> F32x2 {
-        unsafe { F32x2(simd_sub(self.0, other.0)) }
+        unsafe { F32x2(aarch64::vsub_f32(self.0, other.0)) }
     }
 }
 
@@ -268,12 +268,12 @@ impl F32x4 {
 
     #[inline]
     pub fn min(self, other: F32x4) -> F32x4 {
-        unsafe { F32x4(simd_minimum_number_nsz(self.0, other.0)) }
+        unsafe { F32x4(aarch64::vminnmq_f32(self.0, other.0)) }
     }
 
     #[inline]
     pub fn max(self, other: F32x4) -> F32x4 {
-        unsafe { F32x4(simd_maximum_number_nsz(self.0, other.0)) }
+        unsafe { F32x4(aarch64::vmaxnmq_f32(self.0, other.0)) }
     }
 
     #[inline]
@@ -305,22 +305,22 @@ impl F32x4 {
 
     #[inline]
     pub fn packed_eq(self, other: F32x4) -> U32x4 {
-        unsafe { U32x4(simd_eq(self.0, other.0)) }
+        unsafe { U32x4(aarch64::vceqq_f32(self.0, other.0)) }
     }
 
     #[inline]
     pub fn packed_gt(self, other: F32x4) -> U32x4 {
-        unsafe { U32x4(simd_gt(self.0, other.0)) }
+        unsafe { U32x4(aarch64::vcgtq_f32(self.0, other.0)) }
     }
 
     #[inline]
     pub fn packed_le(self, other: F32x4) -> U32x4 {
-        unsafe { U32x4(simd_le(self.0, other.0)) }
+        unsafe { U32x4(aarch64::vcleq_f32(self.0, other.0)) }
     }
 
     #[inline]
     pub fn packed_lt(self, other: F32x4) -> U32x4 {
-        unsafe { U32x4(simd_lt(self.0, other.0)) }
+        unsafe { U32x4(aarch64::vcltq_f32(self.0, other.0)) }
     }
 
     // Swizzle conversions
@@ -377,7 +377,7 @@ impl F32x4 {
     /// Converts these packed floats to integers via rounding.
     #[inline]
     pub fn to_i32x4(self) -> I32x4 {
-        unsafe { I32x4(simd_cast(aarch64::vrndaq_f32(self.0))) }
+        unsafe { I32x4(aarch64::vcvtq_s32_f32(aarch64::vrndaq_f32(self.0))) }
     }
 }
 
@@ -429,7 +429,7 @@ impl Add<F32x4> for F32x4 {
     type Output = F32x4;
     #[inline]
     fn add(self, other: F32x4) -> F32x4 {
-        unsafe { F32x4(simd_add(self.0, other.0)) }
+        unsafe { F32x4(aarch64::vaddq_f32(self.0, other.0)) }
     }
 }
 
@@ -437,7 +437,7 @@ impl Div<F32x4> for F32x4 {
     type Output = F32x4;
     #[inline]
     fn div(self, other: F32x4) -> F32x4 {
-        unsafe { F32x4(simd_div(self.0, other.0)) }
+        unsafe { F32x4(aarch64::vdivq_f32(self.0, other.0)) }
     }
 }
 
@@ -445,7 +445,7 @@ impl Mul<F32x4> for F32x4 {
     type Output = F32x4;
     #[inline]
     fn mul(self, other: F32x4) -> F32x4 {
-        unsafe { F32x4(simd_mul(self.0, other.0)) }
+        unsafe { F32x4(aarch64::vmulq_f32(self.0, other.0)) }
     }
 }
 
@@ -453,7 +453,7 @@ impl Sub<F32x4> for F32x4 {
     type Output = F32x4;
     #[inline]
     fn sub(self, other: F32x4) -> F32x4 {
-        unsafe { F32x4(simd_sub(self.0, other.0)) }
+        unsafe { F32x4(aarch64::vsubq_f32(self.0, other.0)) }
     }
 }
 
@@ -487,7 +487,7 @@ impl I32x2 {
 
     #[inline]
     pub fn packed_eq(self, other: I32x2) -> U32x2 {
-        unsafe { U32x2(simd_eq(self.0, other.0)) }
+        unsafe { U32x2(aarch64::vceq_s32(self.0, other.0)) }
     }
 
     // Basic operations
@@ -514,7 +514,7 @@ impl I32x2 {
     /// Converts these packed integers to floats.
     #[inline]
     pub fn to_f32x2(self) -> F32x2 {
-        unsafe { F32x2(simd_cast(self.0)) }
+        unsafe { F32x2(aarch64::vcvt_f32_s32(self.0)) }
     }
 
     #[inline]
@@ -564,7 +564,7 @@ impl Add<I32x2> for I32x2 {
     type Output = I32x2;
     #[inline]
     fn add(self, other: I32x2) -> I32x2 {
-        unsafe { I32x2(simd_add(self.0, other.0)) }
+        unsafe { I32x2(aarch64::vadd_s32(self.0, other.0)) }
     }
 }
 
@@ -572,7 +572,7 @@ impl Sub<I32x2> for I32x2 {
     type Output = I32x2;
     #[inline]
     fn sub(self, other: I32x2) -> I32x2 {
-        unsafe { I32x2(simd_sub(self.0, other.0)) }
+        unsafe { I32x2(aarch64::vsub_s32(self.0, other.0)) }
     }
 }
 
@@ -580,7 +580,7 @@ impl Mul<I32x2> for I32x2 {
     type Output = I32x2;
     #[inline]
     fn mul(self, other: I32x2) -> I32x2 {
-        unsafe { I32x2(simd_mul(self.0, other.0)) }
+        unsafe { I32x2(aarch64::vmul_s32(self.0, other.0)) }
     }
 }
 
@@ -604,29 +604,29 @@ impl I32x4 {
 
     #[inline]
     pub fn max(self, other: I32x4) -> I32x4 {
-        unsafe { I32x4(simd_cast(simd_maximum_number_nsz(self.to_f32x4().0, other.to_f32x4().0))) }
+        unsafe { I32x4(aarch64::vcvtq_s32_f32(aarch64::vmaxnmq_f32(self.to_f32x4().0, other.to_f32x4().0))) }
     }
 
     #[inline]
     pub fn min(self, other: I32x4) -> I32x4 {
-        unsafe { I32x4(simd_cast(simd_minimum_number_nsz(self.to_f32x4().0, other.to_f32x4().0))) }
+        unsafe { I32x4(aarch64::vcvtq_s32_f32(aarch64::vminnmq_f32(self.to_f32x4().0, other.to_f32x4().0))) }
     }
 
     // Packed comparisons
 
     #[inline]
     pub fn packed_eq(self, other: I32x4) -> U32x4 {
-        unsafe { U32x4(simd_eq(self.0, other.0)) }
+        unsafe { U32x4(aarch64::vceqq_s32(self.0, other.0)) }
     }
 
     #[inline]
     pub fn packed_le(self, other: I32x4) -> U32x4 {
-        unsafe { U32x4(simd_le(self.0, other.0)) }
+        unsafe { U32x4(aarch64::vcleq_s32(self.0, other.0)) }
     }
 
     #[inline]
     pub fn packed_lt(self, other: I32x4) -> U32x4 {
-        unsafe { U32x4(simd_lt(self.0, other.0)) }
+        unsafe { U32x4(aarch64::vcltq_s32(self.0, other.0)) }
     }
 
     // Concatenations
@@ -673,7 +673,7 @@ impl I32x4 {
     /// Converts these packed integers to floats.
     #[inline]
     pub fn to_f32x4(self) -> F32x4 {
-        unsafe { F32x4(simd_cast(self.0)) }
+        unsafe { F32x4(aarch64::vcvtq_f32_s32(self.0)) }
     }
 }
 
@@ -711,7 +711,7 @@ impl Add<I32x4> for I32x4 {
     type Output = I32x4;
     #[inline]
     fn add(self, other: I32x4) -> I32x4 {
-        unsafe { I32x4(simd_add(self.0, other.0)) }
+        unsafe { I32x4(aarch64::vaddq_s32(self.0, other.0)) }
     }
 }
 
@@ -719,7 +719,7 @@ impl Sub<I32x4> for I32x4 {
     type Output = I32x4;
     #[inline]
     fn sub(self, other: I32x4) -> I32x4 {
-        unsafe { I32x4(simd_sub(self.0, other.0)) }
+        unsafe { I32x4(aarch64::vsubq_s32(self.0, other.0)) }
     }
 }
 
@@ -727,7 +727,7 @@ impl Mul<I32x4> for I32x4 {
     type Output = I32x4;
     #[inline]
     fn mul(self, other: I32x4) -> I32x4 {
-        unsafe { I32x4(simd_mul(self.0, other.0)) }
+        unsafe { I32x4(aarch64::vmulq_s32(self.0, other.0)) }
     }
 }
 
@@ -742,7 +742,7 @@ impl BitAnd<I32x4> for I32x4 {
     type Output = I32x4;
     #[inline]
     fn bitand(self, other: I32x4) -> I32x4 {
-        unsafe { I32x4(simd_and(self.0, other.0)) }
+        unsafe { I32x4(aarch64::vandq_s32(self.0, other.0)) }
     }
 }
 
@@ -750,7 +750,7 @@ impl BitOr<I32x4> for I32x4 {
     type Output = I32x4;
     #[inline]
     fn bitor(self, other: I32x4) -> I32x4 {
-        unsafe { I32x4(simd_or(self.0, other.0)) }
+        unsafe { I32x4(aarch64::vorrq_s32(self.0, other.0)) }
     }
 }
 
@@ -758,7 +758,7 @@ impl Shr<I32x4> for I32x4 {
     type Output = I32x4;
     #[inline]
     fn shr(self, other: I32x4) -> I32x4 {
-        unsafe { I32x4(simd_shr(self.0, other.0)) }
+        unsafe { I32x4(aarch64::vshlq_s32(self.0, aarch64::vnegq_s32(other.0))) }
     }
 }
 
@@ -798,7 +798,7 @@ impl U32x2 {
 
     #[inline]
     pub fn to_i32x2(self) -> I32x2 {
-        unsafe { I32x2(simd_cast(self.0)) }
+        unsafe { I32x2(aarch64::vreinterpret_s32_u32(self.0)) }
     }
 }
 
@@ -819,7 +819,7 @@ impl Not for U32x2 {
     #[inline]
     fn not(self) -> U32x2 {
         // FIXME(pcwalton): Is there a better way to do this?
-        unsafe { U32x2(simd_xor(self.0, U32x2::splat(!0).0)) }
+        unsafe { U32x2(aarch64::veor_u32(self.0, U32x2::splat(!0).0)) }
     }
 }
 
@@ -827,7 +827,7 @@ impl BitAnd<U32x2> for U32x2 {
     type Output = U32x2;
     #[inline]
     fn bitand(self, other: U32x2) -> U32x2 {
-        unsafe { U32x2(simd_and(self.0, other.0)) }
+        unsafe { U32x2(aarch64::vand_u32(self.0, other.0)) }
     }
 }
 
@@ -835,7 +835,7 @@ impl BitOr<U32x2> for U32x2 {
     type Output = U32x2;
     #[inline]
     fn bitor(self, other: U32x2) -> U32x2 {
-        unsafe { U32x2(simd_or(self.0, other.0)) }
+        unsafe { U32x2(aarch64::vorr_u32(self.0, other.0)) }
     }
 }
 
@@ -877,7 +877,7 @@ impl U32x4 {
 
     #[inline]
     pub fn packed_eq(self, other: U32x4) -> U32x4 {
-        unsafe { U32x4(simd_eq(self.0, other.0)) }
+        unsafe { U32x4(aarch64::vceqq_u32(self.0, other.0)) }
     }
 }
 
