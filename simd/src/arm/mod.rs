@@ -907,7 +907,7 @@ impl PartialEq for U32x4 {
     }
 }
 
-extern "C" {
+extern "llvm-intrinsic" {
     #[link_name = "llvm.fabs.v2f32"]
     fn fabs_v2f32(a: float32x2_t) -> float32x2_t;
     #[link_name = "llvm.floor.v2f32"]
